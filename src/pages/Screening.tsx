@@ -95,7 +95,12 @@ const Screening = () => {
               </p>
 
               <div className="pt-4">
-                <Button variant="hero" size="lg" className="text-lg px-8">
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="text-lg px-8"
+                  onClick={() => navigate("/assessment")}
+                >
                   Start Assessment Now
                 </Button>
               </div>
