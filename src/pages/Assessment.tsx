@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -92,6 +92,15 @@ const Assessment = () => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
   const question = questions[currentQuestion];
 
+  // Handle sequence display for recall questions
+  useEffect(() => {
+    if (question.type === "recall" && question.sequence) {
+      setShowSequence(true);
+      const timer = setTimeout(() => setShowSequence(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentQuestion, question.type, question.sequence]);
+
   const handleAnswer = (answer: string) => {
     setAnswers({ ...answers, [currentQuestion]: answer });
   };
@@ -99,12 +108,7 @@ const Assessment = () => {
   const handleNext = () => {
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      if (questions[currentQuestion + 1].type === "recall" && questions[currentQuestion + 1].sequence) {
-        setShowSequence(true);
-        setTimeout(() => setShowSequence(false), 5000); // Show for 5 seconds
-      }
     } else {
-      // Navigate to results
       navigate("/results");
     }
   };
