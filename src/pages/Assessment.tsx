@@ -92,14 +92,22 @@ const Assessment = () => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
   const question = questions[currentQuestion];
 
-  // Handle sequence display for recall questions
+  // Handle sequence display for recall questions - auto-advance after memorization
   useEffect(() => {
     if (question.type === "recall" && question.sequence) {
       setShowSequence(true);
-      const timer = setTimeout(() => setShowSequence(false), 5000);
+      const timer = setTimeout(() => {
+        setShowSequence(false);
+        // Auto-advance to next question after memorization period
+        setTimeout(() => {
+          if (currentQuestion < totalQuestions - 1) {
+            setCurrentQuestion(currentQuestion + 1);
+          }
+        }, 500);
+      }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [currentQuestion, question.type, question.sequence]);
+  }, [currentQuestion, question.type, question.sequence, totalQuestions]);
 
   const handleAnswer = (answer: string) => {
     setAnswers({ ...answers, [currentQuestion]: answer });
