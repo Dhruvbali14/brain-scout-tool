@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Stethoscope } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CTA = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-24 px-4">
       <div className="container mx-auto">
@@ -17,7 +20,12 @@ const CTA = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Button variant="hero" size="lg" className="group">
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="group"
+                  onClick={() => navigate("/screening")}
+                >
                   Start Free Screening
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>

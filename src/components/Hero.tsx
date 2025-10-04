@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, Stethoscope } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroBrain from "@/assets/hero-brain.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background gradient */}
@@ -39,7 +42,12 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="hero" size="lg" className="group">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="group"
+                onClick={() => navigate("/screening")}
+              >
                 Start Screening
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
