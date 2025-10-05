@@ -58,37 +58,75 @@ const ClinicalDashboard = () => {
 
     setIsAnalyzing(true);
 
-    // Simulate AI analysis (2-3 seconds)
-    setTimeout(() => {
-      // Mock analysis result
-      const mockResult: AnalysisResult = {
-        scanType: selectedScanType,
-        fileName: uploadedFile.name,
-        riskLevel: Math.random() > 0.5 ? "moderate" : "low",
-        confidence: 95 + Math.random() * 3,
-        findings: [
-          "Mild cortical atrophy observed in temporal regions",
-          "Hippocampal volume within normal limits",
-          "No significant white matter lesions detected",
-          "Ventricular size appropriate for age",
-        ],
-        recommendations: [
-          "Consider follow-up scan in 6-12 months",
-          "Correlate with cognitive assessment results",
-          "Recommend comprehensive neuropsychological evaluation",
-          "Monitor patient for any clinical changes",
-        ],
-        imageUrl: URL.createObjectURL(uploadedFile),
-      };
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(uploadedFile);
+      
+      await new Promise((resolve, reject) => {
+        reader.onload = async () => {
+          try {
+            const base64Image = (reader.result as string).split(',')[1];
+            
+            // Call the AI analysis edge function
+            const response = await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-brain-scan`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                },
+                body: JSON.stringify({
+                  imageBase64: base64Image,
+                  scanType: selectedScanType,
+                }),
+              }
+            );
 
-      setAnalysisResult(mockResult);
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Analysis failed');
+            }
+
+            const { analysis } = await response.json();
+
+            const result: AnalysisResult = {
+              scanType: selectedScanType,
+              fileName: uploadedFile.name,
+              riskLevel: analysis.riskLevel,
+              confidence: analysis.confidence,
+              findings: analysis.findings,
+              recommendations: analysis.recommendations,
+              imageUrl: URL.createObjectURL(uploadedFile),
+            };
+
+            setAnalysisResult(result);
+            setIsAnalyzing(false);
+            
+            toast({
+              title: "AI Analysis Complete",
+              description: "Brain scan analyzed successfully with Gemini AI",
+            });
+            
+            resolve(true);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        
+        reader.onerror = () => reject(new Error('Failed to read file'));
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
       setIsAnalyzing(false);
       
       toast({
-        title: "Analysis complete",
-        description: "AI model processed the scan successfully",
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze scan",
+        variant: "destructive",
       });
-    }, 2500);
+    }
   };
 
   const getRiskColor = (risk: RiskLevel) => {

@@ -51,7 +51,7 @@ const Hero = () => {
                 Start Screening
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" onClick={() => navigate("/clinical")}>
                 <Stethoscope className="w-5 h-5" />
                 For Healthcare Professionals
               </Button>
