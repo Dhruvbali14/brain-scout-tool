@@ -106,6 +106,9 @@ const Assessment = () => {
         }, 500);
       }, 5000);
       return () => clearTimeout(timer);
+    } else {
+      // For non-recall questions, ensure showSequence is false
+      setShowSequence(false);
     }
   }, [currentQuestion, question.type, question.sequence, totalQuestions]);
 
