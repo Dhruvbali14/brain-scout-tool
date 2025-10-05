@@ -117,6 +117,7 @@ const Assessment = () => {
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      // Navigate to results after last question
       navigate("/results");
     }
   };
@@ -256,10 +257,10 @@ const Assessment = () => {
             <Button
               variant="default"
               onClick={handleNext}
-              disabled={!answers[currentQuestion] && question.type !== "recall"}
+              disabled={question.type !== "recall" && !answers[currentQuestion]}
               className="min-w-32"
             >
-              {currentQuestion === totalQuestions - 1 ? "Finish" : "Next"}
+              {currentQuestion === totalQuestions - 1 ? "View Results" : "Next"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           )}
