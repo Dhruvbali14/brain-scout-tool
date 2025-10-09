@@ -8,6 +8,9 @@ import Screening from "./pages/Screening";
 import Assessment from "./pages/Assessment";
 import Results from "./pages/Results";
 import ClinicalDashboard from "./pages/ClinicalDashboard";
+import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +23,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/screening" element={<Screening />} />
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/results" element={<Results />} />
