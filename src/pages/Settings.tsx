@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Settings as SettingsIcon, LogOut } from "lucide-react";
+import { ArrowLeft, Settings as SettingsIcon, LogOut, Languages } from "lucide-react";
+import { useLanguage, Language } from "@/contexts/LanguageContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +23,7 @@ import {
 const Settings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   const handleLogout = async () => {
     setLoading(true);
@@ -61,8 +65,31 @@ const Settings = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="language" className="flex items-center gap-2 mb-2">
+                    <Languages className="w-4 h-4" />
+                    {t("settings.language")}
+                  </Label>
+                  <Select value={language} onValueChange={(value: Language) => setLanguage(value)}>
+                    <SelectTrigger id="language">
+                      <SelectValue placeholder={t("settings.selectLanguage")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">{t("languages.en")}</SelectItem>
+                      <SelectItem value="hi">{t("languages.hi")}</SelectItem>
+                      <SelectItem value="bn">{t("languages.bn")}</SelectItem>
+                      <SelectItem value="te">{t("languages.te")}</SelectItem>
+                      <SelectItem value="ta">{t("languages.ta")}</SelectItem>
+                      <SelectItem value="mr">{t("languages.mr")}</SelectItem>
+                      <SelectItem value="gu">{t("languages.gu")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div>
-                <h3 className="text-lg font-semibold mb-4">Account</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("settings.account")}</h3>
                 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
