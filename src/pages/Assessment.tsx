@@ -2,18 +2,20 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Brain, CheckCircle, Circle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Brain, CheckCircle, Circle, Mic, MicOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type Question = {
   id: number;
   category: "memory" | "problem-solving" | "speech";
-  type: "multiple-choice" | "sequence" | "pattern" | "recall";
+  type: "multiple-choice" | "sequence" | "pattern" | "recall" | "speech-recognition";
   question: string;
   options?: string[];
   correctAnswer?: string;
   sequence?: string[];
   image?: string;
+  expectedWords?: string[];
 };
 
 const Assessment = () => {
@@ -22,6 +24,9 @@ const Assessment = () => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showSequence, setShowSequence] = useState(true);
   const [sequenceMemory, setSequenceMemory] = useState<string[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [recognition, setRecognition] = useState<any>(null);
 
   // Sample questions for the assessment
   const questions: Question[] = [
@@ -82,15 +87,59 @@ const Assessment = () => {
     {
       id: 8,
       category: "speech",
-      type: "multiple-choice",
-      question: "Choose the word that best completes: 'Hot is to Cold as Day is to ___'",
-      options: ["Night", "Sun", "Morning", "Bright"]
+      type: "speech-recognition",
+      question: "Speak the following sentence clearly: 'The quick brown fox jumps over the lazy dog'",
+      expectedWords: ["quick", "brown", "fox", "jumps", "lazy", "dog"]
+    },
+    {
+      id: 9,
+      category: "speech",
+      type: "speech-recognition",
+      question: "Name three animals you can think of (speak them aloud)",
+      expectedWords: []
     }
   ];
 
   const totalQuestions = questions.length;
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
   const question = questions[currentQuestion];
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = true;
+      recognitionInstance.lang = 'en-US';
+
+      recognitionInstance.onresult = (event: any) => {
+        const current = event.resultIndex;
+        const transcriptText = event.results[current][0].transcript;
+        setTranscript(transcriptText);
+        
+        if (event.results[current].isFinal) {
+          handleAnswer(transcriptText);
+          setIsRecording(false);
+          toast.success("Speech captured successfully!");
+        }
+      };
+
+      recognitionInstance.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+        toast.error("Speech recognition error. Please try again.");
+      };
+
+      recognitionInstance.onend = () => {
+        setIsRecording(false);
+      };
+
+      setRecognition(recognitionInstance);
+    } else {
+      toast.error("Speech recognition not supported in this browser.");
+    }
+  }, []);
 
   // Handle sequence display for recall questions - auto-advance after memorization
   useEffect(() => {
@@ -112,8 +161,32 @@ const Assessment = () => {
     }
   }, [currentQuestion, question.type, question.sequence, totalQuestions]);
 
+  // Reset transcript when changing questions
+  useEffect(() => {
+    setTranscript("");
+    if (isRecording && recognition) {
+      recognition.stop();
+    }
+  }, [currentQuestion]);
+
   const handleAnswer = (answer: string) => {
     setAnswers({ ...answers, [currentQuestion]: answer });
+  };
+
+  const startRecording = () => {
+    if (recognition) {
+      setTranscript("");
+      recognition.start();
+      setIsRecording(true);
+      toast.info("Listening... Speak now!");
+    }
+  };
+
+  const stopRecording = () => {
+    if (recognition && isRecording) {
+      recognition.stop();
+      setIsRecording(false);
+    }
   };
 
   const handleNext = () => {
@@ -176,7 +249,7 @@ const Assessment = () => {
         </div>
 
         {/* Question Card */}
-        <Card className="border-2 mb-6">
+        <Card className="border-2 mb-6 transition-all duration-300 hover:shadow-lg">
           <CardContent className="p-8">
             <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${getCategoryBg(question.category)} ${getCategoryColor(question.category)} text-sm font-medium mb-6 capitalize`}>
               <Brain className="w-4 h-4" />
@@ -189,22 +262,72 @@ const Assessment = () => {
 
             {/* Sequence Display (for memory questions) */}
             {question.type === "recall" && question.sequence && showSequence && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-in fade-in duration-500">
                 <div className="p-6 bg-muted rounded-lg">
                   <div className="flex flex-wrap gap-4 justify-center">
                     {question.sequence.map((item, idx) => (
                       <div 
                         key={idx}
                         className="px-6 py-3 bg-card border-2 border-primary rounded-lg text-lg font-semibold animate-pulse"
+                        style={{ animationDelay: `${idx * 100}ms` }}
                       >
                         {item}
                       </div>
                     ))}
                   </div>
                 </div>
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-sm text-muted-foreground animate-pulse">
                   Memorize these items. They will disappear in a few seconds...
                 </p>
+              </div>
+            )}
+
+            {/* Speech Recognition Interface */}
+            {question.type === "speech-recognition" && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="flex flex-col items-center gap-4">
+                  <Button
+                    size="lg"
+                    variant={isRecording ? "destructive" : "default"}
+                    onClick={isRecording ? stopRecording : startRecording}
+                    className="relative group transition-all duration-300 hover:scale-105"
+                  >
+                    {isRecording ? (
+                      <>
+                        <MicOff className="w-5 h-5 mr-2 animate-pulse" />
+                        Stop Recording
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-5 h-5 mr-2" />
+                        Start Recording
+                      </>
+                    )}
+                  </Button>
+
+                  {isRecording && (
+                    <div className="flex gap-1 items-center">
+                      <div className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
+                      <div className="w-2 h-3 bg-destructive rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                      <div className="w-2 h-4 bg-destructive rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                      <div className="w-2 h-3 bg-destructive rounded-full animate-pulse" style={{ animationDelay: '0.6s' }} />
+                      <div className="w-2 h-2 bg-destructive rounded-full animate-pulse" style={{ animationDelay: '0.8s' }} />
+                    </div>
+                  )}
+                </div>
+
+                {(transcript || answers[currentQuestion]) && (
+                  <div className="p-6 bg-muted rounded-lg animate-in slide-in-from-bottom duration-300">
+                    <p className="text-sm text-muted-foreground mb-2">Your response:</p>
+                    <p className="text-lg font-medium">{transcript || answers[currentQuestion]}</p>
+                  </div>
+                )}
+
+                {!transcript && !answers[currentQuestion] && (
+                  <div className="p-6 bg-muted/50 rounded-lg text-center">
+                    <p className="text-muted-foreground">Click the microphone button and speak clearly</p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -215,15 +338,16 @@ const Assessment = () => {
                   <button
                     key={idx}
                     onClick={() => handleAnswer(option)}
-                    className={`p-4 text-left rounded-lg border-2 transition-all hover:shadow-md ${
+                    className={`p-4 text-left rounded-lg border-2 transition-all duration-300 hover:shadow-md hover:scale-[1.02] animate-in fade-in slide-in-from-left ${
                       answers[currentQuestion] === option
-                        ? "border-primary bg-primary/5"
+                        ? "border-primary bg-primary/5 shadow-lg scale-[1.02]"
                         : "border-border hover:border-primary/50"
                     }`}
+                    style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div className="flex items-center gap-3">
                       {answers[currentQuestion] === option ? (
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 animate-in zoom-in duration-300" />
                       ) : (
                         <Circle className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                       )}
@@ -261,7 +385,7 @@ const Assessment = () => {
               variant="default"
               onClick={handleNext}
               disabled={question.type !== "recall" && !answers[currentQuestion]}
-              className="min-w-32"
+              className="min-w-32 transition-all duration-300 hover:scale-105"
             >
               {currentQuestion === totalQuestions - 1 ? "View Results" : "Next"}
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -275,9 +399,9 @@ const Assessment = () => {
             <button
               key={q.id}
               onClick={() => setCurrentQuestion(idx)}
-              className={`w-8 h-8 rounded-full text-xs font-medium transition-all ${
+              className={`w-8 h-8 rounded-full text-xs font-medium transition-all duration-300 hover:scale-110 ${
                 idx === currentQuestion
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground scale-110 shadow-lg"
                   : answers[idx]
                   ? "bg-primary/20 text-primary"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
