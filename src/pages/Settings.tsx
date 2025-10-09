@@ -42,13 +42,9 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/")}
-          className="mb-6"
-        >
+        <Button variant="ghost" onClick={() => navigate("/")} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
+          {t("common.backToHome")}
         </Button>
 
         <div className="max-w-2xl mx-auto space-y-6">
@@ -57,10 +53,8 @@ const Settings = () => {
               <div className="flex items-center gap-3">
                 <SettingsIcon className="w-8 h-8 text-primary" />
                 <div>
-                  <CardTitle>Settings</CardTitle>
-                  <CardDescription>
-                    Manage your account preferences
-                  </CardDescription>
+                  <CardTitle>{t("settings.title")}</CardTitle>
+                  <CardDescription>{t("settings.description")}</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -95,20 +89,18 @@ const Settings = () => {
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" disabled={loading}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      Log Out
+                      {t("common.logout")}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        You will be logged out of your account.
-                      </AlertDialogDescription>
+                      <AlertDialogTitle>{t("settings.areYouSure")}</AlertDialogTitle>
+                      <AlertDialogDescription>{t("settings.logoutConfirm")}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                       <AlertDialogAction onClick={handleLogout}>
-                        Log Out
+                        {t("common.logout")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft, User as UserIcon } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     username: "",
@@ -77,13 +79,9 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/")}
-          className="mb-6"
-        >
+        <Button variant="ghost" onClick={() => navigate("/")} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
+          {t("common.backToHome")}
         </Button>
 
         <div className="max-w-2xl mx-auto">
@@ -92,17 +90,15 @@ const Profile = () => {
               <div className="flex items-center gap-3">
                 <UserIcon className="w-8 h-8 text-primary" />
                 <div>
-                  <CardTitle>Profile Settings</CardTitle>
-                  <CardDescription>
-                    Manage your account information
-                  </CardDescription>
+                  <CardTitle>{t("profile.title")}</CardTitle>
+                  <CardDescription>{t("profile.description")}</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleUpdate} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username">{t("profile.usernameLabel")}</Label>
                   <Input
                     id="username"
                     type="text"
@@ -110,26 +106,22 @@ const Profile = () => {
                     disabled
                     className="bg-muted"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    Username cannot be changed
-                  </p>
+                  <p className="text-sm text-muted-foreground">{t("profile.usernameNote")}</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="fullName">{t("profile.fullNameLabel")}</Label>
                   <Input
                     id="fullName"
                     type="text"
-                    placeholder="Enter your full name"
+                    placeholder={t("profile.fullNamePlaceholder")}
                     value={profile.fullName}
-                    onChange={(e) =>
-                      setProfile({ ...profile, fullName: e.target.value })
-                    }
+                    onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
                   />
                 </div>
 
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Updating..." : "Update Profile"}
+                  {loading ? t("profile.updating") : t("profile.updateProfile")}
                 </Button>
               </form>
             </CardContent>

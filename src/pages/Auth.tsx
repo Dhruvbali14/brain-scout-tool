@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Brain } from "lucide-react";
 import { z } from "zod";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const authSchema = z.object({
   username: z.string().trim().min(3, "Username must be at least 3 characters").max(50, "Username must be less than 50 characters"),
@@ -18,6 +19,7 @@ const authSchema = z.object({
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const [signupData, setSignupData] = useState({ username: "", password: "", fullName: "" });
@@ -129,55 +131,47 @@ const Auth = () => {
             <Brain className="w-12 h-12 text-primary" />
             <h1 className="text-3xl font-bold">NeuroCheck</h1>
           </div>
-          <p className="text-muted-foreground">
-            Early detection for better cognitive health
-          </p>
+          <p className="text-muted-foreground">{t("auth.tagline")}</p>
         </div>
 
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="login">{t("common.login")}</TabsTrigger>
+            <TabsTrigger value="signup">{t("common.signup")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
             <Card>
               <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>
-                  Login to access your cognitive assessments
-                </CardDescription>
+                <CardTitle>{t("auth.welcomeBack")}</CardTitle>
+                <CardDescription>{t("auth.loginDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-username">Username</Label>
+                    <Label htmlFor="login-username">{t("auth.username")}</Label>
                     <Input
                       id="login-username"
                       type="text"
-                      placeholder="Enter your username"
+                      placeholder={t("auth.enterUsername")}
                       value={loginData.username}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, username: e.target.value })
-                      }
+                      onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
+                    <Label htmlFor="login-password">{t("auth.password")}</Label>
                     <Input
                       id="login-password"
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder={t("auth.enterPassword")}
                       value={loginData.password}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, password: e.target.value })
-                      }
+                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                       required
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Logging in..." : "Login"}
+                    {loading ? t("auth.loggingIn") : t("common.login")}
                   </Button>
                 </form>
               </CardContent>
@@ -187,53 +181,45 @@ const Auth = () => {
           <TabsContent value="signup">
             <Card>
               <CardHeader>
-                <CardTitle>Create Account</CardTitle>
-                <CardDescription>
-                  Don't have an account? Register here
-                </CardDescription>
+                <CardTitle>{t("auth.createAccount")}</CardTitle>
+                <CardDescription>{t("auth.signupDesc")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-username">Username</Label>
+                    <Label htmlFor="signup-username">{t("auth.username")}</Label>
                     <Input
                       id="signup-username"
                       type="text"
-                      placeholder="Choose a username"
+                      placeholder={t("auth.chooseUsername")}
                       value={signupData.username}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, username: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-fullname">Full Name (Optional)</Label>
+                    <Label htmlFor="signup-fullname">{t("auth.fullName")}</Label>
                     <Input
                       id="signup-fullname"
                       type="text"
-                      placeholder="Enter your full name"
+                      placeholder={t("auth.enterFullName")}
                       value={signupData.fullName}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, fullName: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password">{t("auth.password")}</Label>
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Create a password (min 6 characters)"
+                      placeholder={t("auth.createPassword")}
                       value={signupData.password}
-                      onChange={(e) =>
-                        setSignupData({ ...signupData, password: e.target.value })
-                      }
+                      onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                       required
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Creating account..." : "Sign Up"}
+                    {loading ? t("auth.creatingAccount") : t("common.signup")}
                   </Button>
                 </form>
               </CardContent>

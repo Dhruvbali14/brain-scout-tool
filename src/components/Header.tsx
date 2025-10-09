@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { User, Session } from "@supabase/supabase-js";
 import { User as UserIcon, Settings, Brain } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import {
 
 const Header = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [username, setUsername] = useState<string>("");
@@ -78,26 +80,26 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
                   <div className="flex flex-col">
-                    <span className="font-semibold">{username || "User"}</span>
+                    <span className="font-semibold">{username || t("common.profile")}</span>
                     <span className="text-xs text-muted-foreground font-normal">
-                      Manage your account
+                      {t("profile.description")}
                     </span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <UserIcon className="w-4 h-4 mr-2" />
-                  Profile
+                  {t("common.profile")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
                   <Settings className="w-4 h-4 mr-2" />
-                  Settings
+                  {t("common.settings")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button onClick={() => navigate("/auth")}>
-              Login
+              {t("common.login")}
             </Button>
           )}
         </div>
