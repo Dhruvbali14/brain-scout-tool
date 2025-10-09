@@ -119,7 +119,7 @@ const Assessment = () => {
         setTranscript(transcriptText);
         
         if (event.results[current].isFinal) {
-          handleAnswer(transcriptText);
+          setAnswers(prev => ({ ...prev, [currentQuestion]: transcriptText }));
           setIsRecording(false);
           toast.success("Speech captured successfully!");
         }
@@ -139,7 +139,7 @@ const Assessment = () => {
     } else {
       toast.error("Speech recognition not supported in this browser.");
     }
-  }, []);
+  }, [currentQuestion]);
 
   // Handle sequence display for recall questions - auto-advance after memorization
   useEffect(() => {
@@ -161,12 +161,9 @@ const Assessment = () => {
     }
   }, [currentQuestion, question.type, question.sequence, totalQuestions]);
 
-  // Reset transcript when changing questions
+  // Reset transcript and stop recording when changing questions
   useEffect(() => {
     setTranscript("");
-    if (isRecording && recognition) {
-      recognition.stop();
-    }
   }, [currentQuestion]);
 
   const handleAnswer = (answer: string) => {
