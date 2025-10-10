@@ -23,11 +23,11 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="animate-scale-in">
+      <div className="animate-pulse">
         <img 
           src={demencarelogo} 
           alt="DEMENCARE" 
-          className="w-64 h-auto animate-fade-in"
+          className="w-64 h-auto"
         />
       </div>
     </div>
