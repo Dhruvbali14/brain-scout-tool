@@ -26,7 +26,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       <img 
         src={demencarelogo} 
         alt="DEMENCARE" 
-        className="w-64 h-auto"
+        className="w-96 h-auto"
       />
     </div>
   );
