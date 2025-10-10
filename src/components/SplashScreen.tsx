@@ -23,13 +23,11 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="animate-pulse">
-        <img 
-          src={demencarelogo} 
-          alt="DEMENCARE" 
-          className="w-64 h-auto"
-        />
-      </div>
+      <img 
+        src={demencarelogo} 
+        alt="DEMENCARE" 
+        className="w-64 h-auto"
+      />
     </div>
   );
 };
