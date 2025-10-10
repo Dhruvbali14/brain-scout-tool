@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Brain } from "lucide-react";
 import { z } from "zod";
 import { useLanguage } from "@/contexts/LanguageContext";
+import demencarelogo from "@/assets/demencare-logo.png";
 
 const authSchema = z.object({
   username: z.string().trim().min(3, "Username must be at least 3 characters").max(50, "Username must be less than 50 characters"),
@@ -127,9 +127,8 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Brain className="w-12 h-12 text-primary" />
-            <h1 className="text-3xl font-bold">NeuroCheck</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img src={demencarelogo} alt="DEMENCARE Logo" className="h-20 w-auto" />
           </div>
           <p className="text-muted-foreground">{t("auth.tagline")}</p>
         </div>

@@ -1,4 +1,4 @@
-import { Brain } from "lucide-react";
+import demencarelogo from "@/assets/demencare-logo.png";
 
 const Footer = () => {
   return (
@@ -6,17 +6,11 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Brain className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <div className="font-bold text-lg">AI Dementia Detection</div>
-              <div className="text-sm text-muted-foreground">Early detection, better outcomes</div>
-            </div>
+            <img src={demencarelogo} alt="DEMENCARE Logo" className="h-16 w-auto" />
           </div>
           
           <div className="text-center md:text-right text-sm text-muted-foreground">
-            <p>© 2025 AI Dementia Detection Tool. All rights reserved.</p>
+            <p>© 2025 DEMENCARE. All rights reserved.</p>
             <p className="mt-1">Empowering early diagnosis through AI innovation</p>
           </div>
         </div>
